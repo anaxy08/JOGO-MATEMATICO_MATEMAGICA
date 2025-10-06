@@ -9,20 +9,71 @@ let gameLevel = 1;
 let lastQuestions = [];
 let playerName = "";
 
-// Referências de DOM (inicializam depois)
+// Referências de DOM
 let startScreen, startBtn, nameScreen, playerNameInput, confirmNameBtn, gameContainer, gameContent, endGameScreen;
 let questionElement, optionsGrid, feedbackMessage;
 let scoreDisplay, totalQuestionsDisplay, finalScoreDisplay, progressBar, levelDisplay;
 let rankingContainer, rankingList, starsContainer;
 
-// Este array simula um "banco de dados" de pontuações
-const rankingData = [
-    { nome: "João", estrelas: 3, nivel: "Fácil" },
-    { nome: "Maria", estrelas: 5, nivel: "Médio" },
-    { nome: "Pedro", estrelas: 4, nivel: "Difícil" },
-    { nome: "Ana", estrelas: 5, nivel: "Fácil" },
-    { nome: "Lucas", estrelas: 2, nivel: "Fácil" }
-];
+// --- Configuração da API ---
+const API_URL = 'http://localhost:3000/ranking'; // Mantenha esta URL para desenvolvimento
+
+// =======================================================
+// FUNÇÕES DE COMUNICAÇÃO COM A API (BACK-END)
+// =======================================================
+
+/**
+ * Envia o resultado da partida para o servidor e, após a resposta, atualiza o ranking.
+ * @param {object} novoResultado - Objeto com nome, estrelas e nível.
+ */
+async function atualizarRankingDoJogador(novoResultado) {
+    // 1. Envia o resultado para o servidor Node.js
+    await enviarResultadoParaServidor(novoResultado);
+
+    // 2. Após salvar, busca e atualiza a exibição do ranking
+    exibirRanking();
+}
+
+// Função para buscar o ranking no servidor
+async function buscarRankingDoServidor() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Erro ao buscar ranking na API. Status: " + response.status);
+        return await response.json();
+    } catch (error) {
+        console.error("Não foi possível carregar o ranking da API. Certifique-se de que o servidor Node.js está rodando na porta 3000:", error);
+        return [];
+    }
+}
+
+// Função para enviar o resultado da partida para o servidor
+async function enviarResultadoParaServidor(resultado) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(resultado)
+        });
+
+        const data = await response.json(); // Tenta ler a resposta JSON
+
+        if (!response.ok) {
+            // Lança erro com a mensagem retornada pela API (ex: Dados incompletos)
+            throw new Error(`Erro ao salvar resultado: ${data.message || response.statusText}`);
+        }
+
+        console.log("Resultado enviado com sucesso!", data);
+    } catch (error) {
+        console.error("Não foi possível enviar o resultado para a API:", error);
+    }
+}
+
+
+// =======================================================
+// FUNÇÕES DE INICIALIZAÇÃO E LÓGICA DO JOGO
+// =======================================================
 
 // Inicialização segura após DOM pronto
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rankingContainer = document.getElementById('ranking-container');
     rankingList = document.getElementById('ranking-list');
 
-    // Listeners (desktop e mobile)
+    // Listeners
     if (startBtn) {
         startBtn.addEventListener('click', startAdventure);
     }
@@ -71,12 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
             startGame();
         });
     }
-
-    // Exibe o ranking inicial
+    // Carrega o ranking ao iniciar a página
     exibirRanking();
 });
 
-// Função para iniciar a aventura
+// Função para iniciar a aventura (transição da tela inicial para a de nome)
 function startAdventure() {
     if (startBtn) startBtn.classList.add('scale-110');
     setTimeout(() => {
@@ -85,7 +135,7 @@ function startAdventure() {
     }, 400);
 }
 
-// Lógica do jogo
+// Lógica de Geração de Problemas (Mantida)
 function getRandomOperator(level) {
     if (level === 1) return ['+', '-'][Math.floor(Math.random() * 2)];
     return operators[Math.floor(Math.random() * operators.length)];
@@ -215,11 +265,14 @@ function endGame() {
     if (gameContent) gameContent.classList.add('hidden');
     if (endGameScreen) endGameScreen.classList.remove('hidden');
 
+    // 1. Cálculo de Estrelas
     let stars = 1;
     if (score >= 8) stars = 3;
     else if (score >= 5) stars = 2;
 
     if (finalScoreDisplay) finalScoreDisplay.textContent = `Sua pontuação final é ${score} de ${totalQuestions}.`;
+
+    // 2. Exibição das Estrelas (Visual)
     if (starsContainer) {
         starsContainer.innerHTML = "";
         for (let i = 0; i < stars; i++) {
@@ -230,28 +283,28 @@ function endGame() {
             starsContainer.appendChild(starImage);
         }
     }
-    
-    
-    const novoJogador = {
+
+    // 3. Criação do Objeto Resultado da Partida
+    const novoResultado = {
         nome: playerName,
         estrelas: stars,
         nivel: obterNomeDoNivel(gameLevel)
     };
 
-    // Adiciona o jogador ao ranking principal
-    adicionarAoRanking(novoJogador);
+    // 4. CHAMA A FUNÇÃO QUE ENVIA E ATUALIZA O RANKING
+    atualizarRankingDoJogador(novoResultado);
 
-    // Exibe o resultado da partida atual na tela de fim de jogo
-    if (document.getElementById('current-player-name')) {
-        document.getElementById('current-player-name').textContent = novoJogador.nome;
-    }
-    if (document.getElementById('current-player-level')) {
-        document.getElementById('current-player-level').textContent = `Nível: ${novoJogador.nivel}`;
-    }
+    // 5. Exibe o resultado da partida atual (localmente na tela de fim de jogo)
+    const currentPlayerNameEl = document.getElementById('current-player-name');
+    const currentPlayerLevelEl = document.getElementById('current-player-level');
     const currentPlayerStarsDiv = document.getElementById('current-player-stars');
+
+    if (currentPlayerNameEl) currentPlayerNameEl.textContent = novoResultado.nome;
+    if (currentPlayerLevelEl) currentPlayerLevelEl.textContent = `Nível: ${novoResultado.nivel}`;
+
     if (currentPlayerStarsDiv) {
         currentPlayerStarsDiv.innerHTML = ""; // Limpa as estrelas anteriores
-        for (let i = 0; i < novoJogador.estrelas; i++) {
+        for (let i = 0; i < novoResultado.estrelas; i++) {
             const estrelaSpan = document.createElement('span');
             estrelaSpan.classList.add('text-yellow-400');
             estrelaSpan.textContent = '★';
@@ -259,35 +312,16 @@ function endGame() {
         }
     }
 }
-  // exibe o resultado da partida atual na tela de fim de jogo
-  document.getElementById('current-player-name').textContent = novoJogador.nome;
-  document.getElementById('current-player-level').textContent = `Nível: ${novoJogador.nivel}`;
-  const currentPlayerStarsDiv = document.getElementById('current-player-stars');
-  currentPlayerStarsDiv.innerHTML = ""; // limpa as estrelas anteriores
-  for (let i = 0; i < novoJogador.estrelas; i++) {
-    const estrelaSpan = document.createElement('span');
-    estrelaSpan.classList.add('text-yellow-400');
-    estrelaSpan.textContent = '★';
-    currentPlayerStarsDiv.appendChild(estrelaSpan);
-  }
-    
 
-    const novoJogador = {
-        nome: playerName,
-        estrelas: stars,
-        nivel: obterNomeDoNivel(gameLevel)
-    };
-
-    adicionarAoRanking(novoJogador);
-
-
-// Funções do Ranking
-function exibirRanking() {
+// Funções do Ranking (Exibição e Nome do Nível)
+async function exibirRanking() {
     if (!rankingList) return;
     rankingList.innerHTML = '';
 
-    rankingData.sort((a, b) => b.estrelas - a.estrelas);
+    // Usa a nova função que busca o ranking no servidor
+    const rankingData = await buscarRankingDoServidor();
 
+    // Filtra para mostrar o top 5 (ou o que estiver disponível)
     const top5 = rankingData.slice(0, 5);
 
     top5.forEach(jogador => {
@@ -321,11 +355,6 @@ function exibirRanking() {
         itemLista.appendChild(nivelP);
         rankingList.appendChild(itemLista);
     });
-}
-
-function adicionarAoRanking(novoJogador) {
-    rankingData.push(novoJogador);
-    exibirRanking();
 }
 
 function obterNomeDoNivel(nivel) {
