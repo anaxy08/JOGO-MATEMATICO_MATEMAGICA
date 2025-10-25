@@ -1,100 +1,119 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Aventura Matemática</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-blue-100 flex items-center justify-center min-h-screen">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aventura Matemágica</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head> 
+<body class="bg-blue-100 min-h-screen flex flex-col">
+    
+  <!-- Theo Tela Inicial -->
+  <div id="start-screen">
+   <!--Som-->
+    <audio id="background-music" loop>
+        <source src="sommagic2.mpeg" type="audio/mpeg">
+    </audio> 
+    <!-- Sons de acerto e erro -->
+    <audio id="sound-correct" src="acertou.mp3"></audio>
+    <audio id="sound-wrong" src="errou.mp3"></audio>
+    <!--Final Som-->
 
-  <!-- Tela inicial -->
-    <div id="start-screen" class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-yellow-200 to-pink-200">
-        <img src="image (1).png" alt="Mascote Matemático" class="w-40 h-40 mb-6 animate-bounce">
-        <h1 class="text-4xl md:text-6xl font-bold text-pink-400 mb-10 font-['Luckiest_Guy']">
-            Matemágica
-        </h1>
-        <button
-            id="start-btn"
-            onclick="startAdventure()"
-            class="bg-green-400 hover:bg-green-500 text-white text-2xl md:text-3xl font-bold py-6 px-12 rounded-full shadow-xl transform transition hover:scale-110 animate-bounce">
-            🚀 Começar a Aventura!
-        </button>
-    </div>
-     <!-- Tela de identificação -->
-    <div id="name-screen" class="hidden flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-200 to-blue-200">
-        <h2 class="text-3xl font-bold text-blue-700 mb-6">Digite seu nome:</h2>
-        <input
-            id="player-name"
-            type="text"
-            maxlength="15"
-            placeholder="Seu nome"
-            class="p-4 text-2xl rounded-xl border-2 border-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-300 text-center mb-6"
-        />
-
-        <!-- Selecionar creditos -->
-  <div class="flex gap-4 mb-6">
-    <button class="creditos" name="Creditos">✨ Creditos</button>
+     <div class="mascote-container">
+      <img src="masc.png" alt="Mascote Matemático" class="mascote" />
+    </div> 
+    <h1 class="title">Matemágica</h1>
+    <button id="start-btn">Começar a aventura</button>
+    <div id="blink-stars"></div> <!-- Contêiner para estrelas piscando -->
   </div>
-  <!--Final parte T-->
-        <button
-            id="confirm-name-btn"
-            class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-4 px-10 rounded-full shadow-lg transition transform hover:scale-105">
-            ✅ Confirmar
-        </button>
+
+  <!-- Final Tela Inicial Mágica -->
+
+  <!-- Tela de identificação -->
+  <div id="name-screen" class="hidden">
+    <!-- Botão Voltar -->
+    <button id="back-btn" class="back-btn">
+        <img src="coelho.png" alt="Voltar" class="icon-magico">
+        <span class="texto-voltar">Voltar</span>
+    </button>
+    <h1 class="title2">Digite seu nome:</h1>
+
+    <input
+        id="player-name"
+        type="text"
+        maxlength="15"
+        placeholder="Seu nome"/>
+
+    <!-- Botão Confirmar -->
+    <button id="confirm-name-btn">✅ Confirmar</button>
+
+    <!-- Botão Créditos -->
+    <div class="flex gap-4 mb-6">
+        <button class="creditos" name="Creditos">✨ Créditos</button>
+    </div>
+    
+</div>
+
+<!-- MASCOTE E BALAO DE FALA_ANA tela de identificação-->
+<div id="mascot-container" class="hidden">
+    <img src="coelho_magicoo.png" alt="Mascote mágico" id="mascot-img">
+    <div id="speech-bubble">Sem seu nome, meu chapéu não faz magia!
+        Digite seu nome!🎩💫</div>
+  </div>
+
+<!--Final tela de identificação-->
+
+
+<!--Tela de jogo-->
+<main id="game-container" class="hidden">
+
+    <img src="mago.png" alt="Mascote" id="mascote-game">
+
+
+    <div id="mascote-game-container" aria-hidden="true">
+        <div id="mascot-game-bubble" class="mascot-bubble" role="status">Mensagem</div>
     </div>
 
-    <main id="game-container" class="hidden rounded-2xl shadow-xl p-8 bg-white max-w-lg w-full" aria-live="polite">
-        <h1 id="game-title" class="text-center font-bold text-3xl md:text-5xl text-blue-700 mb-6">
-            Aventura Matemática
-        </h1>
-        
-        <div class="progress-bar-container mb-4">
-            <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+    
+    <!-- Container do jogo -->
+    <div id="game-box" class="hidden">
+        <div id="magic-sparkles"></div>
+        <h1 id="game-title">🧮 Desafio Matemático 🧮</h1>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
         </div>
-
-        <section id="game-content" class="flex flex-col items-center">
-            <div id="question-area" class="rounded-xl p-6 md:p-8 bg-blue-50 relative">
-                <img src="robozinho.png" alt="Mascote" class="w-20 h-20 absolute -left-24 top-4 animate-pulse" id="mascote">
-                <div id="question" class="font-bold text-3xl md:text-5xl text-blue-600 mb-4 text-center"></div>
-                <div id="options-grid" class="grid grid-cols-2 gap-4"></div>
+        <section id="game-content">
+            <div id="question-area">
+                <div id="question"></div>
+                <div id="options-grid"></div>
             </div>
-            <div id="feedback-message" role="alert" class="text-xl font-semibold mt-4 text-center"></div>
+            <div id="feedback-message"></div>
         </section>
 
-        <div id="score-display" class="score-display text-center mt-4">
+        <div id="score-display">
             Pontuação: <span id="score">0</span> / <span id="total-questions">10</span><br>
             Nível: <span id="level">1</span>
         </div>
 
-        <div id="end-game-screen" class="hidden flex flex-col items-center gap-4 mt-6">
-            <h2 class="text-3xl font-bold text-blue-700">Jogo Finalizado!</h2>
-            <p id="final-score" class="text-2xl font-semibold text-gray-700"></p>
-            <div id="stars" class="flex gap-2 text-5xl"></div>
+        <div id="end-game-screen" class="hidden">
+            <h2>🏆 Jogo Finalizado!</h2>
+            <p id="final-score"></p>
+            <div id="stars"></div>
             <button onclick="startGame()"
                 class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-300">
                 Jogar Novamente
             </button>
-            <!-- Tela Ranking -->
-            <div id="ranking-container" class="mt-8 p-4 bg-white rounded-lg shadow-md w-full">
-                <h2 class="text-xl font-bold text-center mb-4">Os Gênios da Aventura Matemágica!</h2>
-                <ol id="ranking-list" class="list-decimal list-inside space-y-4"></ol>
-            </div>
-
-            <div id="current-player-result" class="mt-8 p-4 bg-white rounded-lg shadow-md w-full">
-                <div class="flex items-center justify-between">
-                    <span id="current-player-name" class="font-bold text-blue-800"></span>
-                    <div id="current-player-stars" class="flex items-center space-x-1"></div>
-                </div>
-                <p id="current-player-level" class="text-gray-600 text-sm"></p>
-            </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <script src="script.js"></script>
+
+<!--Final Tela de jogo-->
+
+<script src="script.js"></script>
 </body>
 </html>

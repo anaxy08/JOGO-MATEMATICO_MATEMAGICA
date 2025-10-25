@@ -1,11 +1,6 @@
-/* ===============================
-   Estilos Gerais
-================================ */
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(to bottom right, #dbeafe, #f0f9ff);
+/* Cursor para varinha */
+* {
+  cursor: url('varinha.png') 16 16, auto !important; /*Theo - ponteiro de varinha magica*/
 }
 
 /* ===============================
@@ -22,6 +17,7 @@ body {
   justify-content: center;
   z-index: 50;
 }
+
 /* ✅ Corrige a especificidade: quando adicionar .hidden via JS, o overlay some de verdade */
 #loading-screen.hidden { 
   display: none !important; 
@@ -39,55 +35,647 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* ===============================
-   Container principal
-================================ */
+
+
+/*==================TELA PRINCIPAL - ALTERAÇÕES THEO ========================*/
+
+#start-screen {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;       /* largura total */
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem; /* garante respiro em telas pequenas */
+  box-sizing: border-box;
+}
+
+/* Fundo mágico tela inicial*/
+#start-screen::before {
+  content: '';
+  position: absolute; 
+  inset: 0; /* top/left/right/bottom 0 */
+  background: url('TelaIdentificacao.png') center/cover no-repeat;
+  z-index: -2;
+  opacity: 0.8;
+  animation: slowMove 10s linear infinite; /*Tempo de movimento da imagem de fundo*/
+}
+
+/*Animação do fundo de tela*/
+@keyframes slowMove {
+  0% { transform: scale(1) translate(0,0); }
+  50% { transform: scale(1.05) translate(-20px, -20px); }
+  100% { transform: scale(1) translate(0,0); }
+}
+
+#start-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30,58,138,0.6), rgba(67,56,202,0.6), rgba(37,99,235,0.6), rgba(109,40,217,0.6));
+  background-size: 400% 400%;
+  z-index: -1;
+}
+
+/* estrela cruzeiro piscando tela inicial*/
+.blink-star {
+  position: absolute;
+  width: 6vw;  /* se adapta ao tamanho da tela */
+  max-width: 40px;
+  height: auto;
+  animation: blink 1.5s infinite alternate;
+  opacity: 0.8;
+  pointer-events: none; /* não interfere em cliques */
+}
+
+@keyframes blink {
+  from { opacity: 0.2; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1.2); }
+}
+
+
+/*Rastro mágico do mouse Theo*/
+.magic-star {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.9;
+  animation: starMove 1s forwards;
+  z-index: 9999; /* sempre acima de tudo */
+}
+
+/*Movimentação do rastro magico Theo*/
+@keyframes starMove {
+  to {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 0;
+  }
+}
+
+
+/* Mascote animado */
+.mascote-container {
+  width: min(60vw, 300px); /* até 300px, mas encolhe no mobile */
+  height: auto;
+  margin-bottom: 2rem;
+}
+
+.mascote {
+  width: 100%;
+  height: auto;
+  animation: jumpSpin 2s ease-in-out infinite; /* ativa a animação */
+}
+
+/* Responsivo*/
+@media (max-width: 768px) {
+  .mascote-container {
+    width: 70vw;   
+    max-width: 250px; /* limita o tamanho */
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Animação do mascote */
+@keyframes jumpSpin {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+/* Título  */
+.title {
+  font-size: clamp(1.8rem, 5vw, 3rem); /* se adapta ao tamanho da tela */
+  color: #facc15;
+  text-shadow: 0 0 8px #fde68a, 0 0 12px #fbbf24;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Botão começar aventura */
+#start-btn {
+  padding: 0.8rem 2rem;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  background: linear-gradient(90deg, #4338ca, #2563eb, #f59e0b);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: bold;
+  border-radius: 40px;
+  transition: all 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  animation: pulseBtn 2s infinite, glowBtn 3s infinite alternate;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.6);
+  z-index: 10;
+}
+
+#start-btn:hover { transform: scale(1.05); }
+
+
+@media (max-width: 768px) {
+  .title {
+    margin-bottom: 1rem;
+  }
+  #start-btn {
+    width: 50%; padding: 0.5rem; 
+  }
+}
+
+/*Animação do botao de começar aventura*/
+@keyframes pulseBtn {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+
+/*Animação da borda do botao começar aventura*/
+@keyframes glowBtn {
+  0% { box-shadow: 0 4px 15px rgba(255,255,255,0.4), 0 0 10px #facc15; }
+  50% { box-shadow: 0 6px 20px rgba(255,255,255,0.6), 0 0 25px #f59e0b; }
+  100% { box-shadow: 0 4px 15px rgba(255,255,255,0.4), 0 0 10px #facc15; }
+}
+
+
+/*===================FINAL TELA INICIAL================= */
+
+
+
+/* ==================== Tela de Identificação - THEO ==================== */
+
+/*ESPELHADO COM A TELA INICIAL*/
+#name-screen {
+  position: fixed;
+  inset: 0;
+  display: none; /* escondida até ativar */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #1e3a8a 0%, #111827 70%);
+  overflow: hidden;
+  z-index: 100;
+  padding: 1rem; 
+}
+
+/* Fundo em movimento */
+#name-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('TelaIdentificacao.png') center/cover no-repeat;
+  z-index: -2;
+  opacity: 0.8;
+  animation: slowMove 10s linear infinite; /*Tempo de movimento da imagem de fundo*/
+}
+
+/* Fundo em movimento */
+#name-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30,58,138,0.6), rgba(67,56,202,0.6), rgba(37,99,235,0.6), rgba(109,40,217,0.6));
+  background-size: 400% 400%;
+  z-index: -1;
+  animation: gradientMove 15s ease infinite;
+}
+
+/* Bolinhas brancas piscando tela de identificação*/
+.star {
+  position: absolute;
+  width: clamp(2px, 0.8vw, 6px); /* escala automática */
+  height: clamp(2px, 0.8vw, 6px);
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: twinkle 3s infinite ease-in-out;
+}
+
+/*Animação das bolinhas */
+@keyframes twinkle {
+  0%,100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Botão flutuante */
+#back-btn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;                 /* espaço entre ícone e texto */
+  padding: 0.05rem 0.50rem;   /* menos padding */
+  border-radius: 50px;
+  font-size: 0.75rem;       /* texto menor */
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #4338ca, #2563eb, #f59e0b);
+  background-size: 200% 200%;
+  border: 2px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255,255,255,0.4), 0 0 15px rgba(250,204,21,0.5);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Ícone */
+.icon-magico {
+  width: 24px;
+  height: auto;
+  animation: pulsar 1.8s infinite ease-in-out
+}
+
+/* Animação de pulsar mágico */
+@keyframes pulsar {
+  0% { transform: scale(1); filter: drop-shadow(0 0 3px gold); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 10px gold); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 3px gold); }
+}
+
+/* Texto */
+.texto-voltar {
+  font-family: "Luckiest Guy", cursive; /* estilo mágico infantil */
+  letter-spacing: 2px;
+}
+
+
+/* Título tela identificação */
+.title2 {
+  font-size: clamp(1.8rem, 5vw, 3rem); /* responsivo */
+  color: #facc15;
+  text-shadow: 0 0 8px #fde68a, 0 0 3px #fbbf24;
+  margin-bottom: 1rem;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Campo do imput nome */
+#player-name {
+  width: min(80%, 400px); /* até 400px, mas ocupa 80% no celular */  
+  background: rgba(255,255,255,0.85);
+  border-radius: 3rem;
+  padding: 0.8rem 1rem;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  text-align: center;
+  color: #1e3a8a; 
+  margin-bottom: 2rem;  /*Distancia para o botao de confirmar*/
+  font-family: 'Luckiest Guy', cursive; /* adiciona a fonte */
+}
+
+/* Botão confirmar espelhado com o botao da tela inicial de começar aventura*/
+#confirm-name-btn {
+  background: linear-gradient(90deg, #4338ca, #2563eb, #f59e0b);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  padding: 0.8rem 2rem;
+  border-radius: 40px;
+  transition: all 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  animation: pulseBtn 2s infinite, glowBtn 3s infinite alternate;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.6);
+  z-index: 10;
+}
+
+#confirm-name-btn:hover { transform: scale(1.1); }
+
+/* Botão de creditos */
+.creditos {
+  background-color: #fde68a; 
+  color: #1e3a8a;             
+  font-weight: bold;
+  font-size: clamp(0.7rem, 2vw, 0.9rem);         
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  bottom: 20px;   /* distância do rodapé */
+  right: 20px;    /* distância da borda direita */
+}
+
+.creditos:hover {
+  background-color: #fcd34d; /* amarelo mais forte */
+  transform: scale(1.05);
+}
+
+/*Responsivo*/
+@media (max-width: 768px) {
+  .title2 { font-size: 2rem; }
+  #player-name { width: 50%; padding: 0.5rem; }
+  #confirm-name-btn { width: 30%; padding: 0.5rem; }
+  .creditos { font-size: 0.8rem; }
+}
+
+/* MASCOTE E BALÃO_ANAAA*/ 
+#mascot-container {
+  position: fixed;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: flex-start;
+  gap: 20px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#mascot-container.show {
+  display: flex;
+  opacity: 1;
+}
+
+#mascot-img {
+  width: clamp(120px, 15vw, 190px);
+  height: auto;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animação do mascote flutuando */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+#speech-bubble {
+  background: #fff;
+  color: #1e3a8a;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.8rem, 2.5vw, 1.1rem);
+  border-radius: 20px;
+  padding: clamp(0.6rem, 3vw, 1.2rem) clamp(0.8rem, 4vw, 1.6rem);
+  max-width: min(70vw, 220px); /* máximo 220px, mas encolhe proporcionalmente */
+  border: 3px solid #facc15;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  transform: translateY(0);
+  margin-top: clamp(40px, 8vh, 80px);
+  line-height: 1.3;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Triângulo do balão */
+#speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: clamp(-12px, -3vw, -15px);
+  top: 50%;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 12px solid #fff;
+  transform: translateY(-50%);
+}
+
+/* Ajustes para telas médias (tablets) */
+@media (max-width: 768px) {
+  #mascot-img { 
+    width: clamp(100px, 18vw, 150px); 
+  }
+  #speech-bubble {
+    margin-top: 40px; /* sobe o balão acima da caixa de nome */
+    font-size: 1rem;
+  }
+  #mascot-container {
+    top: 35%; /* mascote mais acima da tela */
+    transform: translateY(-50%);
+  }
+}
+
+/* Ajustes para telas pequenas (celulares) */
+@media (max-width: 500px) {
+  #mascot-img { width: 80px; }
+  #speech-bubble {
+    margin-top: 50px; /* balão ainda mais acima do mascote */
+    max-width: 60vw;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+  #speech-bubble::after { 
+    left: -10px; 
+    border-right-width: 10px; 
+  }
+  #mascot-container {
+    top: 25%; /* mascote bem mais acima da tela */
+    transform: translateY(-50%);
+  }
+}
+
+/*======================= FINAL TELA DE IDENTIFICAÇÃO ======================*/
+
+
+
+/*======================= TELA DE JOGO THEO ======================*/
+
+
+/*Fundo tela de jogo*/
 #game-container {
-  animation: fadeIn 0.6s ease-in-out;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: relative; 
+  overflow: hidden;
+  }
+
+/*Animação da tela de fundo*/
+#game-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('telajogo.png') center/cover no-repeat;
+    z-index: -2;
+    opacity: 0.8;
+    animation: slowMove 10s linear infinite; /*Tempo de movimento da imagem de fundo*/
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+/*Animação da tela de fundo*/
+#game-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30,58,138,0.6), rgba(67,56,202,0.6), rgba(37,99,235,0.6), rgba(109,40,217,0.6));
+  background-size: 400% 400%;
+  z-index: -1;
+  animation: gradientMove 15s ease infinite;
 }
 
-/* ===============================
-   Questões e opções
-================================ */
+/* Animação do gradiente (tela de identificação e jogo) */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/*Mascote tamanho e posição*/
+#mascote-game {
+  position: absolute;
+  bottom: 10vh;
+  left: 35vh;
+  width: clamp(100px, 18vw, 200px);
+  height: auto;
+  animation: jumpSpin 2s ease-in-out infinite; /* ativa a animação a mesma da tela de inicio*/
+}
+
+/* Localização do Balão do mascote na tela de jogo */
+#mascote-game-container {
+  position: absolute;
+  bottom: 45vh; 
+  left: 4vw;  
+  z-index: 60;
+  pointer-events: none; 
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/*Estilo do Balão de feedback*/
+#mascot-game-bubble.mascot-bubble {
+    position: relative;
+    display: inline-block;
+    background: #ffffff;
+    color: #0b3b5c;
+    font-family: "Comic Neue", "Inter", sans-serif;
+    font-weight: 700;
+    padding: clamp(20px, 3vw, 40px) clamp(15px, 3vw, 30px);
+    border: 4px solid #000;
+    border-radius: 50% / 45%;
+    text-align: center;
+    max-width: clamp(180px, 30vw, 280px);
+    line-height: 1.4;
+    box-shadow: 6px 6px 0 #00000066;
+    transform: scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 300ms ease, opacity 300ms ease;
+}
+
+/* Efeito ao aparecer feedback*/
+#mascot-game-bubble.show {
+    opacity: 1;
+    transform: scale(1);
+    animation: bubblePop 400ms ease-out;
+}
+
+@keyframes bubblePop {
+    0% { transform: scale(0.7); opacity: 0; }
+    80% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+/*Caldo do balão*/
+#mascot-game-bubble.mascot-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;   
+    right: 12px;     
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 26px 38px 0 0;
+    border-color: #ffffff transparent transparent transparent;
+    transform: rotate(50deg);
+    z-index: 1;
+}
+
+/*Container do jogo*/
+#game-box {
+  position: absolute;
+  background: linear-gradient(135deg, #3b0ca3, #6b00b3, #009dff, #0dc0ba);
+  background-size: 300% 300%;
+  top: 50%;          
+  left: 50%;        
+  transform: translate(-50%, -50%); 
+  border-radius: 1rem;
+  box-shadow: 0 0 25px rgba(106, 210, 244, 0.534); /* brilho mágico */
+  border: 3px solid rgb(38, 138, 200);
+  width: clamp(300px, 60vw, 600px);
+  min-height: clamp(350px, 70vh, 500px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: magiaDegrade 8s ease infinite;
+}
+
+/* animação do degradê "mágico" */
+@keyframes magiaDegrade {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/*Titulo*/
+#game-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #000; /* preto elegante */
+  font-weight: 100; /* o mais leve possível */
+  text-shadow: 0 0 15px #7dd3fc;  
+  margin-top: 2.5rem; /* mais espaçamento do topo */
+  margin-bottom: 2rem;
+  font-family: 'Luckiest Guy', cursive;
+  letter-spacing: 1px; /* opcional: deixa as letras um pouco mais "arejadas" */
+}
+
+/* Barra de progresso */
+#progress-bar-container {
+  width: 80%;
+  max-width: 550px;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(135deg, #3b0ca3, #0dc0ba);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Container interno (questões) */
+#question-area {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  background: linear-gradient(145deg, #f0f8ff, #e0f7fa); /* tema azul/mágico */
+  border-radius: 2rem;        
+  width: 100%;          
+  padding: clamp(1.5rem, 5vw, 4rem);           
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 94, 255, 0.6);
+  margin-top: 1.5rem;        
+}
+
 #question {
   font-family: 'Luckiest Guy', cursive;
   text-align: center;
   letter-spacing: 2px;
 }
 
+/* Botões das opções */
 .option-btn {
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
   background-color: #bfdbfe;
   color: #1e3a8a;
+  font-weight: bold;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.2rem;
+  margin: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
 }
 
 .option-btn:hover:not(:disabled) {
   background-color: #93c5fd;
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.option-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* ===============================
-   Estados de resposta
-================================ */
 .option-btn.correct {
   background-color: #34d399 !important; /* verde */
-  color: white !important;
-  animation: pulseCorrect 0.5s ease;
+  color: white;
+  animation: pulseCorrect 0.5s ease-in-out;
 }
 
 @keyframes pulseCorrect {
@@ -98,8 +686,8 @@ body {
 
 .option-btn.wrong {
   background-color: #f87171 !important; /* vermelho */
-  color: white !important;
-  animation: shake 0.4s ease;
+  color: white;
+  animation: shake 0.3s ease-in-out;
 }
 
 @keyframes shake {
@@ -109,34 +697,100 @@ body {
   75% { transform: translateX(-5px); }
 }
 
-/* ===============================
-   Barra de progresso
-================================ */
-.progress-bar-container {
-  width: 100%;
-  height: 14px;
-  background: #e5e7eb;
-  border-radius: 9999px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(to right, #2563eb, #3b82f6);
-  border-radius: 9999px;
-  transition: width 0.4s ease;
-}
-
-/* ===============================
-   Mensagens
-================================ */
+/*  Mensagem de feedback */
 #feedback-message {
-  min-height: 32px;
-  text-align: center;
-  font-weight: 600;
-  transition: opacity 0.3s ease;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: #ffcc00;
+  text-shadow: 0 0 5px black;
+  margin-top: 1rem;
+  text-align: center; 
 }
+
+
+/* Responsividade */
+@media (max-width: 600px) {
+
+  #game-box {
+    top: 42%;              
+    transform: translate(-50%, -55%);
+    width: 90%;
+    min-height: 70vh;
+    padding: 1rem;
+  }
+
+  #game-title {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
+
+  #progress-bar-container {
+    margin-bottom: 1rem;
+    height: 16px;
+  }
+
+  #question-area {
+    padding: 1.5rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+
+  .option-btn {
+    width: 85%;
+    padding: 0.6rem 1rem;
+    margin: 0.4rem 0;
+  }
+
+  /*Mascote no canto inferior direito */
+  #mascote-game {
+    left: auto;
+    right: 6vw;
+    bottom: 4vh;
+    width: clamp(80px, 22vw, 120px);
+  }
+
+  /* Balão do lado esquerdo do mascote */
+  #mascote-game-container {
+    bottom: 12vh;     
+    left: auto;
+    right: 35vw;      
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  #mascot-game-bubble.mascot-bubble {
+    max-width: 220px;
+    padding: 18px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* Cauda para o lado direito */
+  #mascot-game-bubble.mascot-bubble::before {
+    display: none;
+  }
+
+  /*Calda em tela pequena*/
+  #mascot-game-bubble.mascot-bubble::after {
+    top: 55%; 
+    left: 96%; 
+    bottom: auto; 
+    margin-top: -12px; 
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 20px solid #fff; 
+    transform: rotate(5deg);
+  }
+}
+
+/*======================= FINAL TELA DE JOGO THEO ======================*/
+
+
+
+
+
+
 
 /* ===============================
    Fim de jogo
@@ -160,32 +814,11 @@ body {
   margin-top: 1rem;
 }
 
-/* ===============================
-   Botão de creditos
-================================ */
-.creditos {
-  background-color: #fde68a; 
-  color: #1e3a8a;             
-  font-weight: bold;
-  font-size: 1.25rem;         
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.creditos:hover {
-  background-color: #fcd34d; /* amarelo mais forte */
-  transform: scale(1.05);
-}
-
-.creditos:active {
-  transform: scale(0.95);
-}
-
-.creditos.selected {
-  background-color: #3b82f6; 
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 0 0 4px #bfdbfe; /* anel azul claro */
+/*THEO - Final do jogo*/
+#end-game-screen {
+  justify-content: flex-start;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  max-height: 80vh;              /* evita cortar conteúdo */
+  overflow-y: auto;              /* scroll interno se necessário */
 }
